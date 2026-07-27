@@ -1,4 +1,7 @@
-def print_terrain(terrain, water=None):
+from typing import List, Optional
+
+
+def print_terrain(terrain: List[int], water: Optional[List[int]] = None) -> None:
     water = water or terrain
     if not terrain or not water:
         print("Terrain is an empty list.")

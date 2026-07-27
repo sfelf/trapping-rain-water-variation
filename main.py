@@ -1,12 +1,13 @@
 from fill import fill
 from terrain import print_terrain
 
-def main():
+
+def main() -> None:
     amount = 4
     pour_position = 6
     terrain = [5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3]
-        
-    print("Initial Terrain:\n")    
+
+    print("Initial Terrain:\n")
     print_terrain(terrain)
 
     water_terrain = fill(amount, pour_position, terrain)
