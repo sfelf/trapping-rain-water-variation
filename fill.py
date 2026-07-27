@@ -1,20 +1,23 @@
-def fill(amount, pour_position, terrain):
+from typing import List, Optional
+
+
+def fill(amount: int, pour_position: int, terrain: List[int]) -> List[int]:
     if not terrain or pour_position < 0 or pour_position >= len(terrain):
         return terrain
 
     water_terrain = terrain.copy()
-    
+
     for _ in range(amount):
         min_position = find_minimum_height(water_terrain, pour_position)
         if not min_position:
-            break  
-        
+            break
+
         water_terrain[min_position] += 1
 
     return water_terrain
 
 
-def find_minimum_height(terrain, position):
+def find_minimum_height(terrain: List[int], position: int) -> Optional[int]:
     left_start = position - 1
     left_stop = 0
     left_step = -1
@@ -35,19 +38,21 @@ def find_minimum_height(terrain, position):
         return min_position
 
 
-def search_for_minimum_position(terrain, min_position, start, stop, step):
+def search_for_minimum_position(terrain: List[int], min_position: int, start: int, stop: int, step: int) -> int:
     for i in range(start, stop, step):
         if terrain[i] < terrain[min_position]:
             min_position = i
         elif terrain[i] > terrain[min_position]:
             break
-    
+
     return min_position
 
 
-def has_containing_walls(terrain, position):
+def has_containing_walls(terrain: List[int], position: int) -> bool:
     positions_to_left = terrain[position - 1::-1]
     positions_to_right = terrain[position + 1:]
-    validator = lambda x: x > terrain[position]
 
-    return any(map(validator, positions_to_left)) and any(map(validator, positions_to_right))
+    return (
+        any(height > terrain[position] for height in positions_to_left)
+        and any(height > terrain[position] for height in positions_to_right)
+    )
