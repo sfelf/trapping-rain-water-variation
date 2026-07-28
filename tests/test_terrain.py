@@ -5,6 +5,20 @@ import pytest
 from terrain import print_terrain
 
 
+INVALID_TERRAIN_CASES = [
+    pytest.param([], None, ValueError, id="empty-terrain"),
+    pytest.param([1], [], ValueError, id="empty-water"),
+    pytest.param([1], [1, 1], ValueError, id="length-mismatch"),
+    pytest.param([2], [1], ValueError, id="water-below-terrain"),
+    pytest.param([True], None, TypeError, id="boolean-terrain-height"),
+    pytest.param([1], [False], TypeError, id="boolean-water-height"),
+    pytest.param([1.0], None, TypeError, id="float-terrain-height"),
+    pytest.param([1], ["1"], TypeError, id="string-water-height"),
+    pytest.param([-1], None, ValueError, id="negative-terrain-height"),
+    pytest.param([1], [-1], ValueError, id="negative-water-height"),
+]
+
+
 @pytest.mark.parametrize(
     ("terrain", "water", "expected"),
     [
@@ -61,20 +75,22 @@ def test_print_terrain_renders_expected_output(
 
 @pytest.mark.parametrize(
     ("terrain", "water", "expected_exception"),
-    [
-        pytest.param([], None, ValueError, id="empty-terrain"),
-        pytest.param([1], [], ValueError, id="empty-water"),
-        pytest.param([1], [1, 1], ValueError, id="length-mismatch"),
-        pytest.param([2], [1], ValueError, id="water-below-terrain"),
-        pytest.param([True], None, TypeError, id="boolean-terrain-height"),
-        pytest.param([1], [False], TypeError, id="boolean-water-height"),
-        pytest.param([1.0], None, TypeError, id="float-terrain-height"),
-        pytest.param([1], ["1"], TypeError, id="string-water-height"),
-        pytest.param([-1], None, ValueError, id="negative-terrain-height"),
-        pytest.param([1], [-1], ValueError, id="negative-water-height"),
-    ],
+    INVALID_TERRAIN_CASES,
 )
-def test_print_terrain_rejects_invalid_input_without_partial_output(
+def test_print_terrain_rejects_invalid_input(
+    terrain: Sequence[Any],
+    water: Sequence[Any] | None,
+    expected_exception: type[Exception],
+) -> None:
+    with pytest.raises(expected_exception):
+        print_terrain(terrain, water)
+
+
+@pytest.mark.parametrize(
+    ("terrain", "water", "expected_exception"),
+    INVALID_TERRAIN_CASES,
+)
+def test_print_terrain_does_not_emit_output_for_invalid_input(
     terrain: Sequence[Any],
     water: Sequence[Any] | None,
     expected_exception: type[Exception],

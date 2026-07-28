@@ -116,8 +116,24 @@ def test_fill_places_water(
 ) -> None:
     water_terrain = fill(amount, pour_position, terrain)
 
-    assert water_terrain is not terrain
     assert water_terrain == expected
+
+
+@pytest.mark.parametrize(
+    "amount",
+    [
+        pytest.param(0, id="zero-amount"),
+        pytest.param(2, id="nonzero-amount"),
+    ],
+)
+def test_fill_returns_new_list_without_mutating_input(amount: int) -> None:
+    terrain = [5, 0, 1, 0, 5]
+    original = terrain.copy()
+
+    result = fill(amount, 2, terrain)
+
+    assert result is not terrain
+    assert terrain == original
 
 
 @pytest.mark.parametrize(
