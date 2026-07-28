@@ -2,14 +2,23 @@ from typing import List, Optional
 
 
 def fill(amount: int, pour_position: int, terrain: List[int]) -> List[int]:
-    if not terrain or pour_position < 0 or pour_position >= len(terrain):
-        return terrain
+    if isinstance(amount, bool) or not isinstance(amount, int):
+        raise TypeError("amount must be an integer")
+
+    if amount < 0:
+        raise ValueError("amount must be non-negative")
+
+    if isinstance(pour_position, bool) or not isinstance(pour_position, int):
+        raise TypeError("pour_position must be an integer")
+
+    if not 0 <= pour_position < len(terrain):
+        raise ValueError("pour_position must identify an element of terrain")
 
     water_terrain = terrain.copy()
 
     for _ in range(amount):
         min_position = find_minimum_height(water_terrain, pour_position)
-        if not min_position:
+        if min_position is None:
             break
 
         water_terrain[min_position] += 1
@@ -37,6 +46,8 @@ def find_minimum_height(terrain: List[int], position: int) -> Optional[int]:
     if has_containing_walls(terrain, min_position):
         return min_position
 
+    return None
+
 
 def search_for_minimum_position(terrain: List[int], min_position: int, start: int, stop: int, step: int) -> int:
     for i in range(start, stop, step):
@@ -49,10 +60,14 @@ def search_for_minimum_position(terrain: List[int], min_position: int, start: in
 
 
 def has_containing_walls(terrain: List[int], position: int) -> bool:
-    positions_to_left = terrain[position - 1::-1]
-    positions_to_right = terrain[position + 1:]
+    position_height = terrain[position]
 
-    return (
-        any(height > terrain[position] for height in positions_to_left)
-        and any(height > terrain[position] for height in positions_to_right)
+    has_left_wall = any(
+        terrain[index] > position_height for index in range(position)
     )
+    has_right_wall = any(
+        terrain[index] > position_height
+        for index in range(position + 1, len(terrain))
+    )
+
+    return has_left_wall and has_right_wall
