@@ -1,7 +1,6 @@
 # Coding Interview Question
 Below are the instructions for a recent Coding Interview question that is a variation on the Trapping Rain Water problem. There are three parts to the challenge. Solutions for parts one and three can be found in `terrain.py` and the solution for part two is in `fill.py`. The code in `main.py` can be used to run the solutions and `tests.py` runs multiple tests for the solution to part two.
 
-
 ## PART ONE:
 Write a function called `printTerrain` which will take an array of numbers as input. Each value in the input array represents the height of an imaginary terrain which we will print to the console. For example:
 
