@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List, Type
 
 import pytest
 
@@ -111,8 +111,8 @@ from fill import fill
 def test_fill_places_water(
     amount: int,
     pour_position: int,
-    terrain: list[int],
-    expected: list[int],
+    terrain: List[int],
+    expected: List[int],
 ) -> None:
     water_terrain = fill(amount, pour_position, terrain)
 
@@ -166,8 +166,8 @@ def test_fill_returns_new_list_without_mutating_input(amount: int) -> None:
 def test_fill_rejects_invalid_arguments(
     amount: Any,
     pour_position: Any,
-    terrain: list[int],
-    expected_exception: type[Exception],
+    terrain: List[int],
+    expected_exception: Type[Exception],
 ) -> None:
     with pytest.raises(expected_exception):
         fill(amount, pour_position, terrain)

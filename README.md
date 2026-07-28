@@ -1,5 +1,5 @@
 # Coding Interview Question
-Below are the instructions for a recent Coding Interview question that is a variation on the Trapping Rain Water problem. There are three parts to the challenge. Solutions for parts one and three can be found in `terrain.py` and the solution for part two is in `fill.py`. The code in `main.py` can be used to run the solutions and `tests.py` runs multiple tests covering both the `fill` and `print_terrain` functions.
+Below are the instructions for a recent Coding Interview question that is a variation on the Trapping Rain Water problem. There are three parts to the challenge. Solutions for parts one and three can be found in `terrain.py` and the solution for part two is in `fill.py`. The code in `main.py` can be used to run the solutions. The pytest suite in `tests/` covers both the `fill` and `print_terrain` functions.
 
 ## PART ONE:
 Write a function called `print_terrain` which will take a sequence of numbers as input. Each value in the input sequence represents the height of an imaginary terrain which we will print to the console. For example:
@@ -88,4 +88,26 @@ Run the example from the repository root:
 
 ```bash
 python main.py
+```
+
+## Running the tests
+
+Create an isolated development environment and install the test dependency:
+
+```bash
+python -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+```
+
+Run the automatically discovered test suite from the repository root:
+
+```bash
+.venv/bin/python -m pytest
+```
+
+Alternatively, let pipx provide an isolated pytest environment without adding
+pytest to the project environment or base Python:
+
+```bash
+pipx run pytest .
 ```

@@ -1,4 +1,4 @@
-from typing import Any, Sequence
+from typing import Any, Optional, Sequence, Type
 
 import pytest
 
@@ -64,7 +64,7 @@ INVALID_TERRAIN_CASES = [
 )
 def test_print_terrain_renders_expected_output(
     terrain: Sequence[int],
-    water: Sequence[int] | None,
+    water: Optional[Sequence[int]],
     expected: str,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -79,8 +79,8 @@ def test_print_terrain_renders_expected_output(
 )
 def test_print_terrain_rejects_invalid_input(
     terrain: Sequence[Any],
-    water: Sequence[Any] | None,
-    expected_exception: type[Exception],
+    water: Optional[Sequence[Any]],
+    expected_exception: Type[Exception],
 ) -> None:
     with pytest.raises(expected_exception):
         print_terrain(terrain, water)
@@ -92,8 +92,8 @@ def test_print_terrain_rejects_invalid_input(
 )
 def test_print_terrain_does_not_emit_output_for_invalid_input(
     terrain: Sequence[Any],
-    water: Sequence[Any] | None,
-    expected_exception: type[Exception],
+    water: Optional[Sequence[Any]],
+    expected_exception: Type[Exception],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     with pytest.raises(expected_exception):
