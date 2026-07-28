@@ -26,7 +26,7 @@ The `fill` function should return a NEW array of numbers which represent the hei
 - `pourPosition` must be an integer identifying an existing position in `terrain`.
 - Boolean values are not accepted as integers for either `amount` or `pourPosition`.
 - The input terrain is never modified. The function always returns a new list for valid input.
-- For each unit, `fill` selects the lowest reachable position. If equally low positions are available on both sides, the left position takes precedence.
+- For each unit, `fill` searches outward from the pour position for a location where water can be contained. When equivalent candidates are found, the left position takes precedence.
 - Water that cannot be contained by higher terrain on both sides spills and is not included in the returned terrain.
 
 The function raises:
