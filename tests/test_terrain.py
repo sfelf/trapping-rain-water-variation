@@ -1,5 +1,3 @@
-from contextlib import redirect_stdout
-from io import StringIO
 from typing import Any, Sequence
 
 import pytest
@@ -54,12 +52,11 @@ def test_print_terrain_renders_expected_output(
     terrain: Sequence[int],
     water: Sequence[int] | None,
     expected: str,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
-    output = StringIO()
-    with redirect_stdout(output):
-        print_terrain(terrain, water)
+    print_terrain(terrain, water)
 
-    assert output.getvalue() == expected
+    assert capsys.readouterr().out == expected
 
 
 @pytest.mark.parametrize(
@@ -81,15 +78,9 @@ def test_print_terrain_rejects_invalid_input_without_partial_output(
     terrain: Sequence[Any],
     water: Sequence[Any] | None,
     expected_exception: type[Exception],
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
-    output = StringIO()
-    try:
-        with redirect_stdout(output):
-            print_terrain(terrain, water)
-    except expected_exception:
-        assert output.getvalue() == ""
-    else:
-        assert False, (
-            f"Expected {expected_exception.__name__} for "
-            f"terrain={terrain!r}, water={water!r}"
-        )
+    with pytest.raises(expected_exception):
+        print_terrain(terrain, water)
+
+    assert capsys.readouterr().out == ""

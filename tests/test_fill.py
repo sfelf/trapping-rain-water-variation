@@ -153,12 +153,5 @@ def test_fill_rejects_invalid_arguments(
     terrain: list[int],
     expected_exception: type[Exception],
 ) -> None:
-    try:
+    with pytest.raises(expected_exception):
         fill(amount, pour_position, terrain)
-    except expected_exception:
-        pass
-    else:
-        assert False, (
-            f"Expected {expected_exception.__name__} for "
-            f"amount={amount!r}, pour_position={pour_position!r}, terrain={terrain!r}"
-        )
