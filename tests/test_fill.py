@@ -1,194 +1,164 @@
-from dataclasses import dataclass
-from typing import Any, List, Type
+from typing import Any
+
+import pytest
 
 from fill import fill
 
 
-@dataclass
-class FillTestCase:
-    amount: int
-    pour_position: int
-    terrain: List[int]
-    expected_water_terrain: List[int]
+@pytest.mark.parametrize(
+    ("amount", "pour_position", "terrain", "expected"),
+    [
+        pytest.param(
+            2,
+            0,
+            [5, 0, 1, 0, 5],
+            [5, 1, 1, 1, 5],
+            id="pour-from-left-wall",
+        ),
+        pytest.param(
+            2,
+            4,
+            [5, 0, 1, 0, 5],
+            [5, 1, 1, 1, 5],
+            id="pour-from-right-wall",
+        ),
+        pytest.param(
+            2,
+            2,
+            [5, 0, 1, 0, 5],
+            [5, 1, 1, 1, 5],
+            id="pour-from-basin-center",
+        ),
+        pytest.param(
+            6,
+            2,
+            [5, 0, 1, 0, 5],
+            [5, 2, 3, 2, 5],
+            id="fill-multiple-levels",
+        ),
+        pytest.param(
+            6,
+            2,
+            [0, 1, 2, 1, 0],
+            [0, 1, 2, 1, 0],
+            id="water-spills-from-uncontained-peak",
+        ),
+        pytest.param(
+            6,
+            2,
+            [0, 1, 0, 1, 0],
+            [0, 1, 1, 1, 0],
+            id="capture-limited-by-containment",
+        ),
+        pytest.param(
+            4,
+            6,
+            [5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3],
+            [5, 4, 2, 1, 3, 2, 2, 2, 2, 2, 4, 3],
+            id="readme-example",
+        ),
+        pytest.param(
+            15,
+            6,
+            [5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3],
+            [5, 4, 3, 3, 4, 4, 4, 3, 3, 3, 4, 3],
+            id="partially-fill-irregular-basin",
+        ),
+        pytest.param(
+            50,
+            6,
+            [5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3],
+            [5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3],
+            id="excess-water-spills",
+        ),
+        pytest.param(
+            50,
+            6,
+            [3, 4, 1, 0, 1, 2, 2, 3, 1, 2, 4, 5],
+            [3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5],
+            id="reversed-terrain-capacity",
+        ),
+        pytest.param(
+            0,
+            1,
+            [2, 0, 2],
+            [2, 0, 2],
+            id="zero-amount",
+        ),
+        pytest.param(
+            1,
+            2,
+            [5, 1, 3, 0, 5],
+            [5, 1, 3, 1, 5],
+            id="lower-candidate-on-right",
+        ),
+        pytest.param(
+            1,
+            2,
+            [5, 0, 3, 0, 5],
+            [5, 1, 3, 0, 5],
+            id="left-wins-equal-height-tie",
+        ),
+        pytest.param(
+            1,
+            0,
+            [0, 1],
+            [0, 1],
+            id="water-spills-at-exposed-edge",
+        ),
+    ],
+)
+def test_fill_places_water(
+    amount: int,
+    pour_position: int,
+    terrain: list[int],
+    expected: list[int],
+) -> None:
+    water_terrain = fill(amount, pour_position, terrain)
+
+    assert water_terrain is not terrain
+    assert water_terrain == expected
 
 
-@dataclass
-class InvalidFillTestCase:
-    amount: Any
-    pour_position: Any
-    terrain: List[int]
-    expected_exception: Type[Exception]
-
-
-def test_fill_valid_cases() -> None:
-    valid_cases: List[FillTestCase] = [
-        FillTestCase(
-            amount=2,
-            pour_position=0,
-            terrain=[5, 0, 1, 0, 5],
-            expected_water_terrain=[5, 1, 1, 1, 5],
+@pytest.mark.parametrize(
+    ("amount", "pour_position", "terrain", "expected_exception"),
+    [
+        pytest.param(1, -1, [5, 0, 5], ValueError, id="negative-position"),
+        pytest.param(
+            1,
+            3,
+            [5, 0, 1],
+            ValueError,
+            id="position-equals-length",
         ),
-        FillTestCase(
-            amount=2,
-            pour_position=4,
-            terrain=[5, 0, 1, 0, 5],
-            expected_water_terrain=[5, 1, 1, 1, 5],
+        pytest.param(
+            1,
+            0,
+            [],
+            ValueError,
+            id="position-in-empty-terrain",
         ),
-        FillTestCase(
-            amount=2,
-            pour_position=2,
-            terrain=[5, 0, 1, 0, 5],
-            expected_water_terrain=[5, 1, 1, 1, 5],
-        ),
-        FillTestCase(
-            amount=6,
-            pour_position=2,
-            terrain=[5, 0, 1, 0, 5],
-            expected_water_terrain=[5, 2, 3, 2, 5],
-        ),
-        FillTestCase(
-            amount=6,
-            pour_position=2,
-            terrain=[0, 1, 2, 1, 0],
-            expected_water_terrain=[0, 1, 2, 1, 0],
-        ),
-        FillTestCase(
-            amount=6,
-            pour_position=2,
-            terrain=[0, 1, 0, 1, 0],
-            expected_water_terrain=[0, 1, 1, 1, 0],
-        ),
-        FillTestCase(
-            amount=4,
-            pour_position=6,
-            terrain=[5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3],
-            expected_water_terrain=[5, 4, 2, 1, 3, 2, 2, 2, 2, 2, 4, 3],
-        ),
-        FillTestCase(
-            amount=15,
-            pour_position=6,
-            terrain=[5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3],
-            expected_water_terrain=[5, 4, 3, 3, 4, 4, 4, 3, 3, 3, 4, 3],
-        ),
-        FillTestCase(
-            amount=50,
-            pour_position=6,
-            terrain=[5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3],
-            expected_water_terrain=[5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3],
-        ),
-        FillTestCase(
-            amount=50,
-            pour_position=6,
-            terrain=[5, 4, 2, 1, 3, 2, 2, 1, 0, 1, 4, 3][::-1],
-            expected_water_terrain=[3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5],
-        ),
-        FillTestCase(
-            amount=0,
-            pour_position=1,
-            terrain=[2, 0, 2],
-            expected_water_terrain=[2, 0, 2],
-        ),
-        FillTestCase(
-            amount=1,
-            pour_position=2,
-            terrain=[5, 1, 3, 0, 5],
-            expected_water_terrain=[5, 1, 3, 1, 5],
-        ),
-        FillTestCase(
-            amount=1,
-            pour_position=2,
-            terrain=[5, 0, 3, 0, 5],
-            expected_water_terrain=[5, 1, 3, 0, 5],
-        ),
-        FillTestCase(
-            amount=1,
-            pour_position=0,
-            terrain=[0, 1],
-            expected_water_terrain=[0, 1],
-        ),
-    ]
-
-    for case in valid_cases:
-        water_terrain = fill(case.amount, case.pour_position, case.terrain)
-
-        assert water_terrain is not case.terrain, (
-            f"Test failed for {case}: water_terrain is the same object as terrain"
+        pytest.param(-1, 1, [5, 0, 1], ValueError, id="negative-amount"),
+        pytest.param(False, 1, [5, 0, 5], TypeError, id="boolean-amount"),
+        pytest.param(1.5, 1, [5, 0, 1], TypeError, id="float-amount"),
+        pytest.param("1", 1, [5, 0, 1], TypeError, id="string-amount"),
+        pytest.param(5, False, [5, 0, 1], TypeError, id="boolean-position"),
+        pytest.param(5, 1.5, [5, 0, 1], TypeError, id="float-position"),
+        pytest.param(5, "1", [5, 0, 1], TypeError, id="string-position"),
+    ],
+)
+def test_fill_rejects_invalid_arguments(
+    amount: Any,
+    pour_position: Any,
+    terrain: list[int],
+    expected_exception: type[Exception],
+) -> None:
+    try:
+        fill(amount, pour_position, terrain)
+    except expected_exception:
+        pass
+    else:
+        assert False, (
+            f"Expected {expected_exception.__name__} for "
+            f"amount={amount!r}, pour_position={pour_position!r}, terrain={terrain!r}"
         )
-        assert water_terrain == case.expected_water_terrain, (
-            f"Test failed for {case}: result={water_terrain}"
-        )
-
-
-def test_fill_invalid_cases() -> None:
-    invalid_cases: List[InvalidFillTestCase] = [
-        InvalidFillTestCase(
-            amount=1,
-            pour_position=-1,
-            terrain=[5, 0, 5],
-            expected_exception=ValueError,
-        ),
-        InvalidFillTestCase(
-            amount=1,
-            pour_position=3,
-            terrain=[5, 0, 1],
-            expected_exception=ValueError,
-        ),
-        InvalidFillTestCase(
-            amount=1,
-            pour_position=0,
-            terrain=[],
-            expected_exception=ValueError,
-        ),
-        InvalidFillTestCase(
-            amount=-1,
-            pour_position=1,
-            terrain=[5, 0, 1],
-            expected_exception=ValueError,
-        ),
-        InvalidFillTestCase(
-            amount=False,
-            pour_position=1,
-            terrain=[5, 0, 5],
-            expected_exception=TypeError,
-        ),
-        InvalidFillTestCase(
-            amount=1.5,
-            pour_position=1,
-            terrain=[5, 0, 1],
-            expected_exception=TypeError,
-        ),
-        InvalidFillTestCase(
-            amount="1",
-            pour_position=1,
-            terrain=[5, 0, 1],
-            expected_exception=TypeError,
-        ),
-        InvalidFillTestCase(
-            amount=5,
-            pour_position=False,
-            terrain=[5, 0, 1],
-            expected_exception=TypeError,
-        ),
-        InvalidFillTestCase(
-            amount=5,
-            pour_position=1.5,
-            terrain=[5, 0, 1],
-            expected_exception=TypeError,
-        ),
-        InvalidFillTestCase(
-            amount=5,
-            pour_position="1",
-            terrain=[5, 0, 1],
-            expected_exception=TypeError,
-        ),
-    ]
-
-    for case in invalid_cases:
-        try:
-            fill(case.amount, case.pour_position, case.terrain)
-        except case.expected_exception:
-            pass
-        else:
-            assert False, (
-                f"Expected {case.expected_exception.__name__} for case: {case}"
-            )
