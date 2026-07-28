@@ -171,3 +171,23 @@ def test_fill_rejects_invalid_arguments(
 ) -> None:
     with pytest.raises(expected_exception):
         fill(amount, pour_position, terrain)
+
+
+@pytest.mark.parametrize(
+    "invalid_height",
+    [
+        pytest.param(True, id="boolean-height"),
+        pytest.param(1.5, id="float-height"),
+        pytest.param("1", id="string-height"),
+    ],
+)
+def test_fill_rejects_invalid_terrain_height_types(
+    invalid_height: Any,
+) -> None:
+    with pytest.raises(TypeError, match="terrain heights must be integers"):
+        fill(0, 1, [5, invalid_height, 5])
+
+
+def test_fill_rejects_negative_terrain_heights() -> None:
+    with pytest.raises(ValueError, match="terrain heights must be non-negative"):
+        fill(0, 1, [5, -1, 5])

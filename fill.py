@@ -14,6 +14,8 @@ def fill(amount: int, pour_position: int, terrain: List[int]) -> List[int]:
     if not 0 <= pour_position < len(terrain):
         raise ValueError("pour_position must identify an element of terrain")
 
+    _validate_terrain_heights(terrain)
+
     water_terrain = terrain.copy()
 
     for _ in range(amount):
@@ -24,6 +26,17 @@ def fill(amount: int, pour_position: int, terrain: List[int]) -> List[int]:
         water_terrain[min_position] += 1
 
     return water_terrain
+
+
+def _validate_terrain_heights(terrain: List[int]) -> None:
+    if any(
+        isinstance(height, bool) or not isinstance(height, int)
+        for height in terrain
+    ):
+        raise TypeError("terrain heights must be integers")
+
+    if any(height < 0 for height in terrain):
+        raise ValueError("terrain heights must be non-negative")
 
 
 def find_minimum_height(terrain: List[int], position: int) -> Optional[int]:
