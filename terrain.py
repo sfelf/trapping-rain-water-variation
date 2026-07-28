@@ -8,15 +8,15 @@ def print_terrain(terrain: Sequence[int], water: Optional[Sequence[int]] = None)
     _validate_terrain_and_water(terrain, water)
 
     max_height: int = max(max(terrain), max(water))
-    terrain_rows: List[List[str]] = []
-
-    for filled_height, terrain_height in zip(water, terrain):
-        land_level = terrain_height + 1
-        water_level = filled_height - terrain_height
-        sky = max_height - filled_height
-        terrain_rows.append(list(" " * sky + "w" * water_level + "+" * land_level))
-
-    for row in zip(*terrain_rows):
+    for height in range(max_height, -1, -1):
+        row: List[str] = []
+        for terrain_height, filled_height in zip(terrain, water):
+            if terrain_height >= height:
+                row.append("+")
+            elif filled_height >= height:
+                row.append("w")
+            else:
+                row.append(" ")
         print("".join(row))
 
 
