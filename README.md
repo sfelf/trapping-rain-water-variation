@@ -60,13 +60,14 @@ For example:
 - `amount` must be a non-negative integer. A value of `0` is valid and returns an unchanged copy of the terrain.
 - `pour_position` must be an integer identifying an existing position in `terrain`.
 - Boolean values are not accepted as integers for either `amount` or `pour_position`.
+- Every terrain height must be a non-negative integer. Boolean values are rejected as heights.
 - The input terrain is never modified. The function always returns a new list for valid input.
 - For each unit, `fill` searches outward from the pour position for a location where water can be contained. When equivalent candidates are found, the left position takes precedence.
 - Water that cannot be contained by higher terrain on both sides spills and is not included in the returned terrain.
 
 The function raises:
-- `TypeError` when `amount` or `pour_position` is not an integer, including boolean values.
-- `ValueError` when `amount` is negative or `pour_position` does not identify an element of `terrain`. Because an empty terrain has no valid position, it also results in `ValueError`.
+- `TypeError` when `amount`, `pour_position`, or a terrain height is not an integer, including boolean values.
+- `ValueError` when `amount` or a terrain height is negative, or when `pour_position` does not identify an element of `terrain`. Because an empty terrain has no valid position, it also results in `ValueError`.
 
 ### `print_terrain` contract
 
