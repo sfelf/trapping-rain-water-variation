@@ -53,9 +53,9 @@ For example:
      ++++++++w+++
      ++++++++++++
 
-## Function Contracts
+# Function Contracts
 
-### `fill` contract
+## `fill` contract
 
 - `amount` must be a non-negative integer. A value of `0` is valid and returns an unchanged copy of the terrain.
 - `pour_position` must be an integer identifying an existing position in `terrain`.
@@ -69,7 +69,7 @@ The function raises:
 - `TypeError` when `amount`, `pour_position`, or a terrain height is not an integer, including boolean values.
 - `ValueError` when `amount` or a terrain height is negative, or when `pour_position` does not identify an element of `terrain`. Because an empty terrain has no valid position, it also results in `ValueError`.
 
-### `print_terrain` contract
+## `print_terrain` contract
 
 - `terrain` must be a nonempty sequence of non-negative integers.
 - When supplied, `water` must be a nonempty sequence of non-negative integers with the same length as `terrain`.
@@ -80,7 +80,7 @@ The function raises:
 - `TypeError` when `terrain` or `water` contain invalid height types.
 - `ValueError` when `terrain` or `water` contain invalid values or relationships.
 
-## Running the example
+# Running the example
 
 This repository is structured as a standalone Python script project rather than
 an installable Python package.
@@ -91,7 +91,7 @@ Run the example from the repository root:
 python main.py
 ```
 
-## Running the tests
+# Running the tests
 
 Create an isolated development environment and install the test dependency:
 
